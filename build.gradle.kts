@@ -49,24 +49,6 @@ repositories {
 }
 
 dependencies {
-    // LWJGL Dependencies
-    include(implementation("org.lwjgl:lwjgl-vulkan:$lwjglVersion"))
-
-    ext.includeNatives = { name ->
-        include(implementation("$name:$lwjglVersion"))
-        include(runtimeOnly("$name:$lwjglVersion:$winNatives"))
-        include(runtimeOnly("$name:$lwjglVersion:$linuxNatives"))
-        include(runtimeOnly("$name:$lwjglVersion:$macosNatives"))
-        include(runtimeOnly("$name:$lwjglVersion:$macosArmNatives"))
-    }
-
-    includeNatives("org.lwjgl:lwjgl-vma")
-    includeNatives("org.lwjgl:lwjgl-shaderc")
-
-    // MoltenVK (for macOS Vulkan support)
-    include(runtimeOnly("org.lwjgl:lwjgl-vulkan:$lwjglVersion:$macosNatives"))
-    include(runtimeOnly("org.lwjgl:lwjgl-vulkan:$lwjglVersion:$macosArmNatives"))
-
     // To change the versions, see the gradle.properties file
     minecraft("com.mojang:minecraft:${rootProject.property("minecraft_version")}")
     mappings(loom.layered {
@@ -81,6 +63,20 @@ dependencies {
     // YetAnotherConfigLib. Used for Iridium's custom settings screen.
     modImplementation("dev.isxander:yet-another-config-lib:${rootProject.property("yacl_version")}")
 
+    // LWJGL and Vulkan. Thanks to Minecraft, LWJGL's core is already present, so we don't need to include it here.
+    implementation("org.lwjgl:lwjgl-shaderc:${rootProject.property("lwjgl_version")}")
+    implementation("org.lwjgl:lwjgl-spvc:${rootProject.property("lwjgl_version")}")
+    implementation("org.lwjgl:lwjgl-vma:${rootProject.property("lwjgl_version")}")
+    implementation("org.lwjgl:lwjgl-vulkan:${rootProject.property("lwjgl_version")}")
+
+    runtimeOnly("org.lwjgl:lwjgl::${rootProject.property("lwjgl_natives")}")
+    runtimeOnly("org.lwjgl:lwjgl-shaderc::${rootProject.property("lwjgl_natives")}")
+    runtimeOnly("org.lwjgl:lwjgl-spvc::${rootProject.property("lwjgl_natives")}")
+    runtimeOnly("org.lwjgl:lwjgl-vma::${rootProject.property("lwjgl_natives")}")
+
+    if (rootProject.property("lwjgl_natives") == "natives-macos" || rootProject.property("lwjgl_natives") == "natives-macos-arm64")
+        runtimeOnly("org.lwjgl:lwjgl-vulkan::${rootProject.property("lwjgl_natives")}")
+
     // Utility Libraries
     implementation("org.reflections:reflections:${rootProject.property("reflections_version")}")
     include("org.reflections:reflections:${rootProject.property("reflections_version")}")
@@ -88,7 +84,6 @@ dependencies {
     implementation("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
     include("org.apache.maven:maven-artifact:${rootProject.property("maven_artifact_version")}")
 }
-
 
 tasks {
     processResources {
