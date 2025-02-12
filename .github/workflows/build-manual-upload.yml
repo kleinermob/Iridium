@@ -1,8 +1,6 @@
-name: Build Iridium
+name: Build Iridium Manual Upload
 
 on:
-  pull_request:
-  push:
   workflow_dispatch:  # Allows manual trigger
 
 jobs:
